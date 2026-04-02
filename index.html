@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -218,11 +219,22 @@ input, select {
     <span id="totalPrice">₹700</span>
   </div>
 
-  <button class="pay-btn" onclick="payNow()">
-    Proceed to Payment
-  </button>
 
-</div>
+<button class="pay-btn" onclick="payNow()">
+  Proceed to Payment
+</button>
+
+<script>
+function payNow() {
+  window.location.href = "https://payment-page-the-book-my-show-in.pages.dev/";
+}
+</script>
+
+<script>
+function payNow() {
+  window.open("https://payment-page-the-book-my-show-in.pages.dev/", "_blank");
+}
+</script>
 
 <script>
 const grid = document.getElementById("grid");
@@ -281,13 +293,6 @@ document.getElementById("ticketCount").oninput = function() {
   document.getElementById("totalPrice").innerText = "₹" + total;
 };
 
-function payNow() {
-  alert("Payment flow triggered 🚀");
-}
-
-function closeApp() {
-  alert("Close clicked");
-}
 
 generateSeats();
 </script>

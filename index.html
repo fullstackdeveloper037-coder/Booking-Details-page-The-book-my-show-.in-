@@ -1,149 +1,296 @@
 
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IPL Ticket Booking</title><style>
+<title>Ticket Flow</title>
+
+<style>
 body {
-    font-family: Arial;
-    margin:0;
-    background:#f2f2f2;
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #f2f2f2;
 }
+
+/* COMMON */
+.container {
+  width: 360px;
+  margin: 20px auto;
+  background: #fff;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.hidden { display: none; }
 
 /* HEADER */
 .header {
-    background:#e11d2e;
-    color:white;
-    padding:20px;
-    border-bottom-left-radius:20px;
-    border-bottom-right-radius:20px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 20px;
+  font-weight: bold;
 }
 
-.header h2 { margin:5px 0; }
-
-/* SECTION */
-.section {
-    padding:15px;
+/* SEAT GRID */
+.grid {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(11, 1fr);
+  gap: 8px;
 }
 
-.title {
-    font-weight:bold;
-    margin:15px 0;
-    color:#555;
+.seat {
+  height: 32px;
+  border-radius: 8px;
+  background: #eee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  cursor: pointer;
 }
 
-/* CARD */
-.card {
-    background:white;
-    border-radius:15px;
-    padding:15px;
-    margin-bottom:15px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    box-shadow:0 2px 6px rgba(0,0,0,0.1);
+.seat.booked {
+  background: #c7e8d0;
+  cursor: not-allowed;
 }
 
-.left {
-    border-left:5px solid green;
-    padding-left:10px;
+.seat.selected {
+  background: #e50914;
+  color: #fff;
 }
 
-.premium { border-left-color:orange; }
-.vip { border-left-color:red; }
-
-.price {
-    color:#e11d2e;
-    font-weight:bold;
-    font-size:18px;
+/* LEGEND */
+.legend {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
 }
 
+.box {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  margin-right: 5px;
+}
+
+.available { background: #eee; }
+.booked-box { background: #c7e8d0; }
+.selected-box { background: #e50914; }
+
+/* MESSAGE */
+.message {
+  text-align: center;
+  margin-top: 15px;
+  color: green;
+  font-weight: bold;
+}
+
+/* BUTTON */
 .btn {
-    background:#e11d2e;
-    color:white;
-    border:none;
-    padding:10px 15px;
-    border-radius:20px;
-    cursor:pointer;
+  width: 100%;
+  margin-top: 15px;
+  padding: 15px;
+  border-radius: 30px;
+  border: none;
+  font-size: 16px;
+  background: #ccc;
+  color: white;
 }
 
-/* POPUP */
-.popup {
-    position:fixed;
-    bottom:0;
-    left:0;
-    right:0;
-    background:white;
-    padding:20px;
-    border-top-left-radius:20px;
-    border-top-right-radius:20px;
-    display:none;
+.btn.active {
+  background: #e50914;
+  cursor: pointer;
 }
 
-.popup input {
-    width:100%;
-    padding:10px;
-    margin:10px 0;
-}
-</style></head><body><div class="header">
-    <h3>Kolkata Knight Riders vs Sunrisers Hyderabad</h3>
-    <p>📅 2 April 2026 | ⏰ 7:30 PM</p>
-    <p>📍 Eden Gardens, Kolkata</p>
-</div><div class="section"><div class="title">LOWER STANDS</div><div class="card">
-    <div class="left">
-        <b>Block B/C/D</b><br>
-        <span class="price">₹750 - ₹1200</span>
-    </div>
-    <button class="btn" onclick="buy('Block B/C/D')">Buy</button>
-</div><div class="card">
-    <div class="left">
-        <b>High Court End</b><br>
-        <span class="price">₹1200 - ₹1850</span>
-    </div>
-    <button class="btn" onclick="buy('High Court End')">Buy</button>
-</div><div class="title">PREMIUM</div><div class="card">
-    <div class="left premium">
-        <b>Club House</b><br>
-        <span class="price">₹2400 - ₹3500</span>
-    </div>
-    <button class="btn" onclick="buy('Club House')">Buy</button>
-</div><div class="card">
-    <div class="left premium">
-        <b>Pavilion Gallery</b><br>
-        <span class="price">₹3500 - ₹4800</span>
-    </div>
-    <button class="btn" onclick="buy('Pavilion Gallery')">Buy</button>
-</div><div class="title">VIP</div><div class="card">
-    <div class="left vip">
-        <b>VIP Box</b><br>
-        <span class="price">₹6000 - ₹7500</span>
-    </div>
-    <button class="btn" onclick="buy('VIP Box')">Buy</button>
-</div></div><!-- POPUP --><div id="popup" class="popup">
-    <h3 id="seatName"></h3>
-    <input id="name" placeholder="Your Name">
-    <input id="qty" type="number" placeholder="Tickets">
-    <button class="btn" onclick="confirmBooking()">Confirm</button>
-</div><script>
-let selectedSeat = "";
-
-function buy(seat) {
-    selectedSeat = seat;
-    document.getElementById("seatName").innerText = "Booking: " + seat;
-    document.getElementById("popup").style.display = "block";
+/* BOOKING FORM */
+.card {
+  background: #f1f1f1;
+  padding: 15px;
+  border-radius: 15px;
+  margin-bottom: 15px;
 }
 
-function confirmBooking() {
-    const name = document.getElementById("name").value;
-    const qty = document.getElementById("qty").value;
+input, select {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  margin-top: 8px;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
 
-    if (!name || !qty) {
-        alert("Fill details");
-        return;
+.row {
+  display: flex;
+  gap: 10px;
+}
+
+.total {
+  background: #eee;
+  padding: 15px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+}
+
+.pay-btn {
+  width: 100%;
+  padding: 16px;
+  margin-top: 20px;
+  border-radius: 30px;
+  border: none;
+  background: #e50914;
+  color: white;
+  font-size: 16px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- SEAT PAGE -->
+<div class="container" id="seatPage">
+  <div class="header">
+    Select Your Seat
+    <span onclick="closeApp()">✕</span>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="legend">
+    <div><span class="box available"></span>Available</div>
+    <div><span class="box booked-box"></span>Booked</div>
+    <div><span class="box selected-box"></span>Selected</div>
+  </div>
+
+  <div class="message" id="message">
+    Select seats to continue
+  </div>
+
+  <button id="continueBtn" class="btn">
+    Continue with 1 ticket →
+  </button>
+</div>
+
+<!-- BOOKING PAGE -->
+<div class="container hidden" id="bookingPage">
+
+  <div class="header">
+    ← Booking Details
+  </div>
+
+  <div class="card">
+    <b>General Stand</b><br>
+    BRSABV Ekana Cricket Stadium, Lucknow<br>
+    ₹700 per ticket
+  </div>
+
+  <label>Full Name</label>
+  <input type="text" placeholder="Enter your full name">
+
+  <label>Email</label>
+  <input type="email" placeholder="your@email.com">
+
+  <label>Phone Number</label>
+  <input type="text" placeholder="+91 98765 43210">
+
+  <div class="row">
+    <div style="flex:1">
+      <label>Tickets</label>
+      <input type="number" value="1" id="ticketCount">
+    </div>
+
+    <div style="flex:1">
+      <label>Match Date</label>
+      <select>
+        <option>Select date</option>
+        <option>2 April 2026</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="total">
+    <span>Total</span>
+    <span id="totalPrice">₹700</span>
+  </div>
+
+  <button class="pay-btn" onclick="payNow()">
+    Proceed to Payment
+  </button>
+
+</div>
+
+<script>
+const grid = document.getElementById("grid");
+const message = document.getElementById("message");
+const btn = document.getElementById("continueBtn");
+
+let selectedSeat = null;
+const pricePerTicket = 700;
+
+// booked seats
+const bookedSeats = [2,4,6,8,10];
+
+function generateSeats() {
+  for (let i = 1; i <= 55; i++) {
+    const seat = document.createElement("div");
+    seat.classList.add("seat");
+    seat.innerText = (i % 11 === 0) ? 11 : i % 11;
+
+    if (bookedSeats.includes(Number(seat.innerText))) {
+      seat.classList.add("booked");
     }
 
-    alert("Booked " + qty + " tickets for " + selectedSeat);
-    document.getElementById("popup").style.display = "none";
+    seat.onclick = () => selectSeat(seat);
+    grid.appendChild(seat);
+  }
 }
-</script></body>
+
+function selectSeat(seat) {
+  if (seat.classList.contains("booked")) {
+    message.innerText = "This ticket is already booked";
+    btn.classList.remove("active");
+    return;
+  }
+
+  document.querySelectorAll(".seat").forEach(s => s.classList.remove("selected"));
+
+  seat.classList.add("selected");
+  selectedSeat = seat.innerText;
+
+  message.innerText = "Seat selected successfully";
+  btn.classList.add("active");
+}
+
+btn.onclick = () => {
+  if (!selectedSeat) {
+    message.innerText = "Select seats to continue";
+    return;
+  }
+
+  document.getElementById("seatPage").classList.add("hidden");
+  document.getElementById("bookingPage").classList.remove("hidden");
+};
+
+document.getElementById("ticketCount").oninput = function() {
+  let total = this.value * pricePerTicket;
+  document.getElementById("totalPrice").innerText = "₹" + total;
+};
+
+function payNow() {
+  alert("Payment flow triggered 🚀");
+}
+
+function closeApp() {
+  alert("Close clicked");
+}
+
+generateSeats();
+</script>
+
+</body>
 </html>
